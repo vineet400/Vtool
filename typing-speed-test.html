@@ -1,0 +1,410 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VTools Typing Speed Test</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+ background:#080d1c;color:white;
+ font-family:Arial,sans-serif;padding:18px;
+}
+.container{max-width:650px;margin:auto}
+header{text-align:center;padding:20px 0 25px}
+.logo{
+ width:60px;height:60px;border-radius:18px;
+ background:linear-gradient(135deg,#8b5cf6,#06b6d4);
+ display:flex;align-items:center;justify-content:center;
+ font-size:29px;margin:0 auto 12px;
+}
+h1{
+ font-size:28px;
+ background:linear-gradient(90deg,#a78bfa,#22d3ee);
+ -webkit-background-clip:text;color:transparent;
+}
+header p{font-size:13px;color:#94a3b8;margin-top:8px}
+.card{
+ background:#111a2e;border:1px solid #26334e;
+ border-radius:20px;padding:20px;margin-bottom:17px;
+}
+.settings{
+ display:flex;justify-content:space-between;
+ align-items:center;gap:12px;flex-wrap:wrap;
+}
+.settings label{font-size:13px;color:#cbd5e1}
+select{
+ background:#0b1427;color:white;
+ border:1px solid #334155;border-radius:10px;
+ padding:10px 12px;font-size:13px;
+}
+.stats{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:10px;margin-top:20px;
+}
+.stat{
+ background:#0b1427;border:1px solid #293954;
+ border-radius:13px;padding:15px 7px;text-align:center;
+}
+.stat strong{
+ display:block;font-size:25px;
+ color:#67e8f9;margin-bottom:6px;
+ font-variant-numeric:tabular-nums;
+}
+.stat span{font-size:11px;color:#94a3b8}
+.progress{
+ height:7px;background:#26334e;
+ border-radius:20px;overflow:hidden;margin-top:20px;
+}
+.progress-bar{
+ width:100%;height:100%;
+ background:linear-gradient(90deg,#7c3aed,#22d3ee);
+ transition:width .2s linear;
+}
+.section-title{font-size:17px;margin-bottom:13px}
+.text-box{
+ background:#0b1427;border:1px solid #293954;
+ border-radius:13px;padding:17px;
+ font-size:16px;line-height:2;
+ color:#94a3b8;min-height:150px;
+ overflow-wrap:anywhere;
+ user-select:none;
+ -webkit-user-select:none;
+ pointer-events:none;
+}
+.text-box span.correct{color:#86efac}
+.text-box span.wrong{
+ color:#fb7185;background:#542538;
+ border-radius:3px;
+}
+.text-box span.current{
+ border-left:2px solid #22d3ee;
+ animation:blink .8s infinite;
+}
+@keyframes blink{50%{border-color:transparent}}
+textarea{
+ width:100%;height:125px;resize:vertical;
+ background:#0b1427;color:white;
+ border:1px solid #334155;border-radius:13px;
+ padding:15px;font-size:15px;line-height:1.7;
+ outline:none;margin-top:15px;
+}
+textarea:focus{border-color:#8b5cf6}
+textarea::placeholder{color:#64748b}
+.buttons{
+ display:flex;flex-wrap:wrap;gap:10px;margin-top:17px;
+}
+.btn{
+ flex:1;min-width:120px;padding:14px;
+ border:0;border-radius:12px;color:white;
+ font-size:13px;font-weight:bold;cursor:pointer;
+}
+.primary{background:linear-gradient(90deg,#7c3aed,#0891b2)}
+.secondary{background:#26334e}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.message{
+ text-align:center;color:#a5b4fc;
+ font-size:13px;margin-top:15px;min-height:18px;
+}
+.result{
+ display:none;text-align:center;
+ background:#0b1427;border:1px solid #334155;
+ padding:20px;border-radius:15px;margin-top:18px;
+}
+.result h2{color:#86efac;margin-bottom:10px}
+.result p{font-size:14px;color:#cbd5e1;margin:8px}
+.result strong{color:#67e8f9}
+.tip{
+ color:#94a3b8;font-size:12px;line-height:1.6;
+ margin-top:15px;
+}
+.footer{text-align:center;color:#64748b;font-size:11px;padding:20px}
+@media(max-width:380px){
+ .stats{gap:6px}
+ .stat strong{font-size:21px}
+ .stat{padding:13px 4px}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+ <div class="logo">⌨️</div>
+ <h1>VTools Typing Speed Test</h1>
+ <p>Test your typing speed, accuracy and skills.</p>
+</header>
+
+<div class="card">
+ <div class="settings">
+  <label for="duration">⏱ Test Duration</label>
+  <select id="duration">
+   <option value="15">15 Seconds</option>
+   <option value="30">30 Seconds</option>
+   <option value="60" selected>60 Seconds</option>
+  </select>
+ </div>
+
+ <div class="stats">
+  <div class="stat">
+   <strong id="time">60</strong>
+   <span>SECONDS</span>
+  </div>
+  <div class="stat">
+   <strong id="wpm">0</strong>
+   <span>WPM</span>
+  </div>
+  <div class="stat">
+   <strong id="accuracy">100%</strong>
+   <span>ACCURACY</span>
+  </div>
+ </div>
+
+ <div class="progress">
+  <div class="progress-bar" id="progressBar"></div>
+ </div>
+</div>
+
+<div class="card">
+ <h2 class="section-title">⌨️ Type the text below</h2>
+
+ <div class="text-box"
+      id="sampleText"
+      contenteditable="false"
+      tabindex="-1"
+      aria-readonly="true"></div>
+
+ <textarea id="typingInput"
+ placeholder="Tap here and start typing..."
+ autocomplete="off"
+ autocorrect="off"
+ autocapitalize="off"
+ spellcheck="false"></textarea>
+
+ <div class="message" id="message">
+  Start typing to begin the test.
+ </div>
+
+ <div class="buttons">
+  <button class="btn primary" id="restartBtn">↻ Restart Test</button>
+  <button class="btn secondary" id="newTextBtn">✦ New Paragraph</button>
+ </div>
+
+ <div class="result" id="result">
+  <h2>🏆 Test Completed!</h2>
+  <p>Completion Time: <strong id="finalTime">0 seconds</strong></p>
+  <p>Typing Speed: <strong id="finalWpm">0 WPM</strong></p>
+  <p>Accuracy: <strong id="finalAccuracy">100%</strong></p>
+  <p>Correct Characters: <strong id="finalCorrect">0</strong></p>
+  <p>Wrong Characters: <strong id="finalWrong">0</strong></p>
+  <p id="resultMessage"></p>
+ </div>
+
+ <p class="tip">
+  Tip: Type accurately first, then try to increase your speed.
+  The timer starts automatically when you type your first character.
+ </p>
+</div>
+
+<div class="footer">© 2026 VTools • Practice makes you faster.</div>
+</div>
+
+<script>
+const paragraphs=[
+ "Practice makes progress. Every day is a new opportunity to learn something useful and improve your skills.",
+ "Technology makes our lives easier. We can use the internet to learn new things, explore ideas and create amazing projects.",
+ "Success does not happen overnight. Stay focused, work hard and keep improving yourself one step at a time.",
+ "A good habit can change your future. Spend some time every day learning, reading and developing your abilities.",
+ "Typing is an important computer skill. Regular practice can improve your speed, accuracy and confidence."
+];
+
+let paragraphIndex=0;
+let text=paragraphs[paragraphIndex];
+let duration=60;
+let timeLeft=duration;
+let startTime=null;
+let timerInterval=null;
+let finished=false;
+let completionTime=0;
+
+const sampleText=document.getElementById('sampleText');
+const typingInput=document.getElementById('typingInput');
+const durationSelect=document.getElementById('duration');
+
+function renderText(){
+ sampleText.innerHTML='';
+ const typed=typingInput.value;
+
+ for(let i=0;i<text.length;i++){
+  const span=document.createElement('span');
+  span.textContent=text[i];
+
+  if(i<typed.length){
+   span.className=typed[i]===text[i]?'correct':'wrong';
+  }else if(i===typed.length && !finished){
+   span.className='current';
+  }
+
+  sampleText.appendChild(span);
+ }
+}
+
+function countStats(){
+ const typed=typingInput.value;
+ let correct=0;
+ let wrong=0;
+
+ for(let i=0;i<typed.length;i++){
+  if(i<text.length && typed[i]===text[i]){
+   correct++;
+  }else{
+   wrong++;
+  }
+ }
+
+ return {correct,wrong,total:typed.length};
+}
+
+function updateStats(){
+ const stats=countStats();
+ const elapsed=startTime
+  ? Math.max(0.1,(Date.now()-startTime)/1000)
+  : 0;
+
+ const wpm=elapsed>0
+  ? Math.round((stats.correct/5)/(elapsed/60))
+  : 0;
+
+ const accuracy=stats.total>0
+  ? Math.round((stats.correct/stats.total)*100)
+  : 100;
+
+ document.getElementById('wpm').textContent=wpm;
+ document.getElementById('accuracy').textContent=accuracy+'%';
+
+ return {stats,wpm,accuracy};
+}
+
+function startTimer(){
+ if(timerInterval || finished)return;
+
+ startTime=Date.now();
+
+ timerInterval=setInterval(()=>{
+  const elapsed=(Date.now()-startTime)/1000;
+  timeLeft=Math.max(0,Math.ceil(duration-elapsed));
+
+  document.getElementById('time').textContent=timeLeft;
+  document.getElementById('progressBar').style.width=
+   (timeLeft/duration*100)+'%';
+
+  updateStats();
+
+  if(timeLeft<=0){
+   finishTest();
+  }
+ },100);
+}
+
+function finishTest(){
+ if(finished)return;
+
+ finished=true;
+ clearInterval(timerInterval);
+ timerInterval=null;
+ typingInput.disabled=true;
+
+ completionTime=startTime
+  ? (Date.now()-startTime)/1000
+  : 0;
+
+ const data=updateStats();
+ const stats=data.stats;
+
+ document.getElementById('time').textContent='0';
+ document.getElementById('progressBar').style.width='0%';
+
+ document.getElementById('finalTime').textContent=
+  completionTime.toFixed(2)+' seconds';
+
+ document.getElementById('finalWpm').textContent=data.wpm+' WPM';
+ document.getElementById('finalAccuracy').textContent=data.accuracy+'%';
+ document.getElementById('finalCorrect').textContent=stats.correct;
+ document.getElementById('finalWrong').textContent=stats.wrong;
+
+ let message='Good effort! Keep practicing.';
+
+ if(data.wpm>=60){
+  message='Amazing! You are a typing speed star! 🌟';
+ }else if(data.wpm>=40){
+  message='Great job! Your typing speed is good! 👏';
+ }else if(data.wpm>=25){
+  message='Nice work! Keep improving! 👍';
+ }
+
+ document.getElementById('resultMessage').textContent=message;
+ document.getElementById('result').style.display='block';
+ document.getElementById('message').textContent='Test completed!';
+
+ renderText();
+}
+
+function resetTest(){
+ clearInterval(timerInterval);
+ timerInterval=null;
+ finished=false;
+ startTime=null;
+ completionTime=0;
+
+ duration=Number(durationSelect.value);
+ timeLeft=duration;
+
+ typingInput.disabled=false;
+ typingInput.value='';
+
+ document.getElementById('time').textContent=duration;
+ document.getElementById('wpm').textContent='0';
+ document.getElementById('accuracy').textContent='100%';
+ document.getElementById('progressBar').style.width='100%';
+ document.getElementById('message').textContent='Start typing to begin the test.';
+ document.getElementById('result').style.display='none';
+
+ renderText();
+}
+
+typingInput.addEventListener('input',()=>{
+ if(finished)return;
+
+ if(!startTime && typingInput.value.length>0){
+  startTimer();
+ }
+
+ renderText();
+ updateStats();
+
+ // Complete when the full paragraph is typed
+ if(typingInput.value.length>=text.length){
+  finishTest();
+ }
+});
+
+durationSelect.addEventListener('change',resetTest);
+
+document.getElementById('restartBtn').onclick=()=>{
+ resetTest();
+ typingInput.focus();
+};
+
+document.getElementById('newTextBtn').onclick=()=>{
+ paragraphIndex=(paragraphIndex+1)%paragraphs.length;
+ text=paragraphs[paragraphIndex];
+ resetTest();
+};
+
+resetTest();
+</script>
+</body>
+</html>

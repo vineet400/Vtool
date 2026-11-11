@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Percentage Calculator - VTools</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial;
+ background:#080b18;
+ color:white;
+ padding:20px;
+}
+header{
+ font-size:25px;
+ font-weight:bold;
+ color:#a78bfa;
+}
+.card{
+ max-width:450px;
+ margin:55px auto;
+ padding:25px;
+ background:#171e36;
+ border:1px solid #ffffff25;
+ border-radius:20px;
+}
+h1{text-align:center}
+p{color:#aab4d0;text-align:center}
+label{display:block;margin-top:20px}
+input{
+ width:100%;
+ padding:14px;
+ margin-top:8px;
+ background:#080b18;
+ border:1px solid #555;
+ border-radius:10px;
+ color:white;
+ font-size:17px;
+}
+button{
+ width:100%;
+ padding:15px;
+ margin-top:22px;
+ background:linear-gradient(90deg,#7c3aed,#0891b2);
+ border:0;
+ border-radius:10px;
+ color:white;
+ font-size:17px;
+ font-weight:bold;
+}
+#result{
+ text-align:center;
+ font-size:25px;
+ color:#22d3ee;
+ margin-top:25px;
+}
+a{color:#a78bfa;text-decoration:none}
+</style>
+</head>
+<body>
+
+<header>✦ VTools</header>
+
+<div class="card">
+<h1>Percentage Calculator</h1>
+<p>Calculate your percentage instantly.</p>
+
+<label>Enter Your Number</label>
+<input type="number" id="number" placeholder="Example: 45">
+
+<label>Enter Total Number</label>
+<input type="number" id="total" placeholder="Example: 100">
+
+<button onclick="calculate()">Calculate</button>
+
+<div id="result"></div>
+
+<p><a href="index.html">← Back to Home</a></p>
+</div>
+
+<script>
+function calculate(){
+ let n = document.getElementById("number").value;
+ let t = document.getElementById("total").value;
+ let result = document.getElementById("result");
+
+ if(n === "" || t === ""){
+   result.innerText = "Please enter both numbers!";
+   return;
+ }
+
+ if(Number(t) === 0){
+   result.innerText = "Total cannot be zero!";
+   return;
+ }
+
+ let percentage = (Number(n)/Number(t))*100;
+
+ result.innerText = percentage.toFixed(2)+"%";
+}
+</script>
+
+</body>
+</html>

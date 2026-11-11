@@ -1,0 +1,741 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VTools Scientific Calculator</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+ background:#080d1c;color:white;
+ font-family:Arial,sans-serif;padding:18px;
+}
+.container{max-width:650px;margin:auto}
+header{text-align:center;padding:20px 0 25px}
+.logo{
+ width:60px;height:60px;border-radius:18px;
+ background:linear-gradient(135deg,#8b5cf6,#06b6d4);
+ display:flex;align-items:center;justify-content:center;
+ font-size:29px;margin:0 auto 12px;
+}
+h1{
+ font-size:27px;
+ background:linear-gradient(90deg,#a78bfa,#22d3ee);
+ -webkit-background-clip:text;color:transparent;
+}
+header p{font-size:13px;color:#94a3b8;margin-top:8px}
+.card{
+ background:#111a2e;border:1px solid #26334e;
+ border-radius:20px;padding:18px;margin-bottom:17px;
+}
+.tabs{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:8px;margin-bottom:17px;
+}
+.tab{
+ padding:12px 5px;border:1px solid #334155;
+ border-radius:11px;background:#0b1427;color:#cbd5e1;
+ font-size:12px;font-weight:bold;
+}
+.tab.active{
+ background:linear-gradient(90deg,#7c3aed,#0891b2);
+ color:white;border-color:transparent;
+}
+.panel{display:none}
+.panel.active{display:block}
+.display{
+ background:#0b1427;border:1px solid #293954;
+ border-radius:14px;padding:15px;margin-bottom:13px;
+}
+#expression{
+ width:100%;background:transparent;border:0;
+ outline:none;color:#94a3b8;font-size:15px;
+ text-align:right;margin-bottom:12px;
+}
+#answer{
+ width:100%;background:transparent;border:0;
+ outline:none;color:#67e8f9;font-size:30px;
+ font-weight:bold;text-align:right;
+}
+.mode-row{
+ display:flex;justify-content:space-between;
+ align-items:center;margin-bottom:13px;
+}
+.mode-row span{font-size:12px;color:#94a3b8}
+.small-btn{
+ background:#26334e;color:white;border:0;
+ border-radius:8px;padding:9px 13px;font-size:12px;
+}
+.keys{
+ display:grid;grid-template-columns:repeat(4,1fr);
+ gap:9px;
+}
+.key{
+ min-height:53px;border:1px solid #293954;
+ border-radius:12px;background:#0b1427;
+ color:white;font-size:16px;font-weight:bold;
+}
+.key.fn{color:#a78bfa;background:#15172e}
+.key.op{color:#67e8f9;background:#102235}
+.key.danger{color:#fb7185;background:#321c2b}
+.key.equal{
+ background:linear-gradient(90deg,#7c3aed,#0891b2);
+ border:0;font-size:20px;
+}
+.section-title{font-size:17px;margin-bottom:15px}
+.field{margin-bottom:13px}
+.field label{
+ display:block;font-size:12px;
+ color:#cbd5e1;margin-bottom:7px;
+}
+.field input,.field select{
+ width:100%;padding:13px;
+ background:#0b1427;color:white;
+ border:1px solid #334155;border-radius:11px;
+ outline:none;font-size:15px;
+}
+.field input:focus,.field select:focus{
+ border-color:#8b5cf6;
+}
+.action{
+ width:100%;padding:14px;border:0;
+ border-radius:11px;color:white;font-weight:bold;
+ font-size:14px;
+ background:linear-gradient(90deg,#7c3aed,#0891b2);
+ margin-top:4px;
+}
+.output{
+ background:#0b1427;border:1px solid #293954;
+ border-radius:12px;padding:15px;margin-top:15px;
+ color:#67e8f9;font-size:15px;
+ line-height:1.8;min-height:50px;
+ overflow-wrap:anywhere;
+}
+.output strong{color:#86efac}
+.grid-two{
+ display:grid;grid-template-columns:1fr 1fr;
+ gap:10px;
+}
+.tool-box{
+ background:#0b1427;border:1px solid #293954;
+ border-radius:14px;padding:14px;margin-bottom:13px;
+}
+.tool-box h3{font-size:14px;margin-bottom:13px;color:#a78bfa}
+.footer{
+ text-align:center;color:#64748b;
+ font-size:11px;padding:20px;
+}
+.note{
+ color:#94a3b8;font-size:11px;
+ line-height:1.6;margin-top:12px;
+}
+@media(max-width:380px){
+ body{padding:12px}
+ .card{padding:13px}
+ .keys{gap:6px}
+ .key{min-height:48px;font-size:14px}
+ h1{font-size:23px}
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+ <div class="logo">🧮</div>
+ <h1>VTools Scientific Calculator</h1>
+ <p>Calculate smarter with advanced math tools.</p>
+</header>
+
+<div class="tabs">
+ <button class="tab active" data-tab="calculator">🧮 Calculator</button>
+ <button class="tab" data-tab="fraction">➗ Ratio & Fraction</button>
+ <button class="tab" data-tab="numbers">🔢 Number Tools</button>
+</div>
+
+<!-- CALCULATOR -->
+<div class="panel active" id="calculator">
+ <div class="card">
+
+  <div class="mode-row">
+   <span>Scientific Calculator</span>
+   <button class="small-btn" id="angleMode">DEG</button>
+  </div>
+
+  <div class="display">
+   <input id="expression" placeholder="Expression" readonly>
+   <input id="answer" value="0" readonly>
+  </div>
+
+  <div class="keys">
+   <button class="key danger" data-action="clear">AC</button>
+   <button class="key danger" data-action="delete">DEL</button>
+   <button class="key fn" data-value="(">(</button>
+   <button class="key fn" data-value=")">)</button>
+
+   <button class="key fn" data-value="sin(">sin</button>
+   <button class="key fn" data-value="cos(">cos</button>
+   <button class="key fn" data-value="tan(">tan</button>
+   <button class="key op" data-value="/">÷</button>
+
+   <button class="key fn" data-value="log(">log</button>
+   <button class="key fn" data-value="ln(">ln</button>
+   <button class="key fn" data-value="sqrt(">√</button>
+   <button class="key op" data-value="*">×</button>
+
+   <button class="key fn" data-value="^2">x²</button>
+   <button class="key fn" data-value="^3">x³</button>
+   <button class="key fn" data-value="^">xʸ</button>
+   <button class="key op" data-value="-">−</button>
+
+   <button class="key" data-value="7">7</button>
+   <button class="key" data-value="8">8</button>
+   <button class="key" data-value="9">9</button>
+   <button class="key op" data-value="+">+</button>
+
+   <button class="key" data-value="4">4</button>
+   <button class="key" data-value="5">5</button>
+   <button class="key" data-value="6">6</button>
+   <button class="key fn" data-value="pi">π</button>
+
+   <button class="key" data-value="1">1</button>
+   <button class="key" data-value="2">2</button>
+   <button class="key" data-value="3">3</button>
+   <button class="key fn" data-value="e">e</button>
+
+   <button class="key" data-value="0">0</button>
+   <button class="key" data-value=".">.</button>
+   <button class="key fn" data-value="fact(">n!</button>
+   <button class="key equal" data-action="calculate">=</button>
+  </div>
+
+  <p class="note">
+   DEG mode uses degrees for sin, cos and tan.
+   RAD mode uses radians.
+  </p>
+ </div>
+</div>
+
+<!-- RATIO AND FRACTION -->
+<div class="panel" id="fraction">
+ <div class="card">
+  <h2 class="section-title">➗ Ratio & Fraction Tools</h2>
+
+  <div class="tool-box">
+   <h3>Ratio Simplifier</h3>
+   <div class="grid-two">
+    <div class="field">
+     <label>First Number</label>
+     <input type="number" id="ratioA" placeholder="Example: 12">
+    </div>
+    <div class="field">
+     <label>Second Number</label>
+     <input type="number" id="ratioB" placeholder="Example: 18">
+    </div>
+   </div>
+   <button class="action" onclick="simplifyRatio()">Simplify Ratio</button>
+   <div class="output" id="ratioResult">Your result will appear here.</div>
+  </div>
+
+  <div class="tool-box">
+   <h3>Fraction Simplifier</h3>
+   <div class="grid-two">
+    <div class="field">
+     <label>Numerator</label>
+     <input type="number" id="fracA" placeholder="Example: 12">
+    </div>
+    <div class="field">
+     <label>Denominator</label>
+     <input type="number" id="fracB" placeholder="Example: 16">
+    </div>
+   </div>
+   <button class="action" onclick="simplifyFraction()">Simplify Fraction</button>
+   <div class="output" id="fractionResult">Your result will appear here.</div>
+  </div>
+
+  <div class="tool-box">
+   <h3>Decimal to Fraction</h3>
+   <div class="field">
+    <label>Enter Decimal Number</label>
+    <input type="number" step="any" id="decimalInput" placeholder="Example: 0.75">
+   </div>
+   <button class="action" onclick="decimalToFraction()">Convert to Fraction</button>
+   <div class="output" id="decimalResult">Your result will appear here.</div>
+  </div>
+
+  <div class="tool-box">
+   <h3>Fraction to Decimal & Mixed Fraction</h3>
+   <div class="grid-two">
+    <div class="field">
+     <label>Numerator</label>
+     <input type="number" id="mixA" placeholder="Example: 7">
+    </div>
+    <div class="field">
+     <label>Denominator</label>
+     <input type="number" id="mixB" placeholder="Example: 2">
+    </div>
+   </div>
+   <button class="action" onclick="fractionConvert()">Convert Fraction</button>
+   <div class="output" id="mixedResult">Your result will appear here.</div>
+  </div>
+ </div>
+</div>
+
+<!-- NUMBER TOOLS -->
+<div class="panel" id="numbers">
+ <div class="card">
+  <h2 class="section-title">🔢 Number Tools</h2>
+
+  <div class="tool-box">
+   <h3>HCF & LCM Calculator</h3>
+   <div class="grid-two">
+    <div class="field">
+     <label>First Number</label>
+     <input type="number" id="hcfA" placeholder="12">
+    </div>
+    <div class="field">
+     <label>Second Number</label>
+     <input type="number" id="hcfB" placeholder="18">
+    </div>
+   </div>
+   <button class="action" onclick="findHcfLcm()">Calculate HCF & LCM</button>
+   <div class="output" id="hcfResult">Your result will appear here.</div>
+  </div>
+
+  <div class="tool-box">
+   <h3>Percentage Calculator</h3>
+   <div class="grid-two">
+    <div class="field">
+     <label>Number</label>
+     <input type="number" id="percentA" placeholder="200">
+    </div>
+    <div class="field">
+     <label>Percentage (%)</label>
+     <input type="number" id="percentB" placeholder="10">
+    </div>
+   </div>
+   <button class="action" onclick="findPercentage()">Calculate Percentage</button>
+   <div class="output" id="percentResult">Your result will appear here.</div>
+  </div>
+
+  <div class="tool-box">
+   <h3>Factorial Calculator</h3>
+   <div class="field">
+    <label>Enter Whole Number (0–170)</label>
+    <input type="number" id="factInput" placeholder="Example: 5">
+   </div>
+   <button class="action" onclick="findFactorial()">Calculate Factorial</button>
+   <div class="output" id="factResult">Your result will appear here.</div>
+  </div>
+
+  <div class="tool-box">
+   <h3>Prime, Even / Odd & Absolute Value</h3>
+   <div class="field">
+    <label>Enter Number</label>
+    <input type="number" id="checkInput" placeholder="Example: 17">
+   </div>
+   <button class="action" onclick="checkNumber()">Check Number</button>
+   <div class="output" id="checkResult">Your result will appear here.</div>
+  </div>
+
+  <div class="tool-box">
+   <h3>Reciprocal & Modulus</h3>
+   <div class="grid-two">
+    <div class="field">
+     <label>First Number</label>
+     <input type="number" id="modA" placeholder="Example: 10">
+    </div>
+    <div class="field">
+     <label>Second Number</label>
+     <input type="number" id="modB" placeholder="Example: 3">
+    </div>
+   </div>
+   <button class="action" onclick="findModulus()">Calculate</button>
+   <div class="output" id="modResult">Your result will appear here.</div>
+  </div>
+ </div>
+</div>
+
+<div class="footer">© 2026 VTools • Smart tools for everyone.</div>
+</div>
+
+<script>
+/* TAB SWITCHING */
+document.querySelectorAll('.tab').forEach(button=>{
+ button.addEventListener('click',()=>{
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  button.classList.add('active');
+  document.getElementById(button.dataset.tab).classList.add('active');
+ });
+});
+
+/* SCIENTIFIC CALCULATOR */
+let expression='';
+let degreeMode=true;
+let lastAnswer=0;
+
+const expressionBox=document.getElementById('expression');
+const answerBox=document.getElementById('answer');
+
+function showExpression(){
+ expressionBox.value=expression;
+}
+
+function factorial(n){
+ if(!Number.isInteger(n)||n<0||n>170){
+  throw new Error('Factorial needs a whole number from 0 to 170');
+ }
+ let result=1;
+ for(let i=2;i<=n;i++)result*=i;
+ return result;
+}
+
+function calculate(){
+ if(!expression)return;
+
+ try{
+  let exp=expression
+   .replace(/×/g,'*')
+   .replace(/÷/g,'/')
+   .replace(/π/g,'pi')
+   .replace(/\^/g,'**');
+
+  const allowed=/^[0-9+\-*/().,\sA-Za-z_]+$/;
+  if(!allowed.test(exp))throw new Error('Invalid expression');
+
+  const names=exp.match(/[A-Za-z_]+/g)||[];
+  const allowedNames=[
+   'sin','cos','tan','log','ln','sqrt',
+   'abs','fact','pi','e'
+  ];
+
+  if(names.some(name=>!allowedNames.includes(name))){
+   throw new Error('Invalid function');
+  }
+
+  const toAngle=x=>degreeMode?x*Math.PI/180:x;
+  const trig=(fn,x)=>fn(toAngle(x));
+
+  const run=new Function(
+   'sin','cos','tan','log','ln','sqrt',
+   'abs','fact','pi','e',
+   '"use strict";return ('+exp+');'
+  );
+
+  const result=run(
+   x=>trig(Math.sin,x),
+   x=>trig(Math.cos,x),
+   x=>{
+    const angle=toAngle(x);
+    if(Math.abs(Math.cos(angle))<1e-12){
+     throw new Error('Undefined tan value');
+    }
+    return Math.tan(angle);
+   },
+   x=>Math.log10(x),
+   x=>Math.log(x),
+   x=>Math.sqrt(x),
+   x=>Math.abs(x),
+   x=>factorial(x),
+   Math.PI,
+   Math.E
+  );
+
+  if(typeof result!=='number'||!Number.isFinite(result)){
+   throw new Error('Invalid calculation');
+  }
+
+  lastAnswer=result;
+  answerBox.value=Number(result.toPrecision(12)).toString();
+
+ }catch(error){
+  answerBox.value='Error';
+ }
+}
+
+document.querySelectorAll('.key').forEach(button=>{
+ button.addEventListener('click',()=>{
+  const value=button.dataset.value;
+  const action=button.dataset.action;
+
+  if(action==='clear'){
+   expression='';
+   answerBox.value='0';
+   showExpression();
+   return;
+  }
+
+  if(action==='delete'){
+   expression=expression.slice(0,-1);
+   showExpression();
+   return;
+  }
+
+  if(action==='calculate'){
+   calculate();
+   return;
+  }
+
+  if(value){
+   expression+=value;
+   showExpression();
+  }
+ });
+});
+
+document.getElementById('angleMode').addEventListener('click',function(){
+ degreeMode=!degreeMode;
+ this.textContent=degreeMode?'DEG':'RAD';
+});
+
+document.addEventListener('keydown',e=>{
+ const active=document.querySelector('.panel.active');
+ if(!active||active.id!=='calculator')return;
+
+ if(/^[0-9.+\-*/()]$/.test(e.key)){
+  expression+=e.key;
+  showExpression();
+ }
+ if(e.key==='Enter')calculate();
+ if(e.key==='Backspace'){
+  expression=expression.slice(0,-1);
+  showExpression();
+ }
+ if(e.key==='Escape'){
+  expression='';
+  answerBox.value='0';
+  showExpression();
+ }
+});
+
+/* COMMON HELPERS */
+function gcd(a,b){
+ a=Math.abs(a);b=Math.abs(b);
+ while(b){let t=b;b=a%b;a=t;}
+ return a;
+}
+function validNumber(v){
+ return v!==''&&Number.isFinite(Number(v));
+}
+function getNumber(id){
+ const v=document.getElementById(id).value;
+ return validNumber(v)?Number(v):null;
+}
+function output(id,html){
+ document.getElementById(id).innerHTML=html;
+}
+
+/* RATIO */
+function simplifyRatio(){
+ const a=getNumber('ratioA');
+ const b=getNumber('ratioB');
+
+ if(a===null||b===null||!Number.isInteger(a)||!Number.isInteger(b)){
+  output('ratioResult','Please enter two whole numbers.');
+  return;
+ }
+ if(a===0&&b===0){
+  output('ratioResult','Both numbers cannot be zero.');
+  return;
+ }
+
+ const g=gcd(a,b);
+ output('ratioResult',
+  '<strong>Simplified Ratio:</strong> '+(a/g)+' : '+(b/g)
+ );
+}
+
+/* FRACTION SIMPLIFIER */
+function simplifyFraction(){
+ const a=getNumber('fracA');
+ const b=getNumber('fracB');
+
+ if(a===null||b===null||!Number.isInteger(a)||!Number.isInteger(b)){
+  output('fractionResult','Please enter whole numbers.');
+  return;
+ }
+ if(b===0){
+  output('fractionResult','Denominator cannot be zero.');
+  return;
+ }
+
+ const g=gcd(a,b);
+ let n=a/g,d=b/g;
+ if(d<0){n=-n;d=-d;}
+
+ output('fractionResult',
+  '<strong>Simplified Fraction:</strong> '+n+'/'+d+
+  '<br><strong>Decimal:</strong> '+(n/d)
+ );
+}
+
+/* DECIMAL TO FRACTION */
+function decimalToFraction(){
+ const value=getNumber('decimalInput');
+ if(value===null){
+  output('decimalResult','Please enter a valid decimal number.');
+  return;
+ }
+ if(Math.abs(value)>1000000000){
+  output('decimalResult','Number is too large.');
+  return;
+ }
+
+ let bestN=0,bestD=1;
+ let error=Infinity;
+
+ for(let d=1;d<=10000;d++){
+  const n=Math.round(value*d);
+  const current=Math.abs(value-n/d);
+  if(current<error){
+   error=current;bestN=n;bestD=d;
+  }
+  if(error<1e-12)break;
+ }
+
+ const g=gcd(bestN,bestD);
+ output('decimalResult',
+  '<strong>Fraction:</strong> '+(bestN/g)+'/'+(bestD/g)
+ );
+}
+
+/* FRACTION CONVERTER */
+function fractionConvert(){
+ const a=getNumber('mixA');
+ const b=getNumber('mixB');
+
+ if(a===null||b===null||!Number.isInteger(a)||!Number.isInteger(b)){
+  output('mixedResult','Please enter whole numbers.');
+  return;
+ }
+ if(b===0){
+  output('mixedResult','Denominator cannot be zero.');
+  return;
+ }
+
+ const decimal=a/b;
+ const whole=Math.trunc(a/b);
+ const remainder=Math.abs(a%b);
+ const g=gcd(remainder,b);
+ let mixed='0';
+
+ if(remainder===0){
+  mixed=String(whole);
+ }else if(whole===0){
+  mixed=(a<0?'-':'')+remainder/g+'/'+Math.abs(b)/g;
+ }else{
+  mixed=whole+' '+(remainder/g)+'/'+(Math.abs(b)/g);
+ }
+
+ output('mixedResult',
+  '<strong>Decimal:</strong> '+decimal+
+  '<br><strong>Mixed Fraction:</strong> '+mixed
+ );
+}
+
+/* HCF AND LCM */
+function findHcfLcm(){
+ const a=getNumber('hcfA');
+ const b=getNumber('hcfB');
+
+ if(a===null||b===null||!Number.isInteger(a)||!Number.isInteger(b)){
+  output('hcfResult','Please enter two whole numbers.');
+  return;
+ }
+ if(Math.abs(a)>1000000000000||Math.abs(b)>1000000000000){
+  output('hcfResult','Numbers are too large.');
+  return;
+ }
+
+ const h=gcd(a,b);
+ const l=(h===0)?0:Math.abs((a/h)*b);
+
+ output('hcfResult',
+  '<strong>HCF / GCD:</strong> '+h+
+  '<br><strong>LCM:</strong> '+l
+ );
+}
+
+/* PERCENTAGE */
+function findPercentage(){
+ const a=getNumber('percentA');
+ const b=getNumber('percentB');
+
+ if(a===null||b===null){
+  output('percentResult','Please enter both numbers.');
+  return;
+ }
+
+ output('percentResult',
+  '<strong>Result:</strong> '+(a*b/100)
+ );
+}
+
+/* FACTORIAL */
+function findFactorial(){
+ const n=getNumber('factInput');
+
+ if(n===null||!Number.isInteger(n)||n<0||n>170){
+  output('factResult','Enter a whole number from 0 to 170.');
+  return;
+ }
+
+ let result=1;
+ for(let i=2;i<=n;i++)result*=i;
+
+ output('factResult',
+  '<strong>'+n+'! =</strong> '+result
+ );
+}
+
+/* PRIME, EVEN / ODD, ABSOLUTE */
+function checkNumber(){
+ const n=getNumber('checkInput');
+
+ if(n===null||!Number.isInteger(n)){
+  output('checkResult','Please enter a whole number.');
+  return;
+ }
+
+ let prime=n>=2;
+ for(let i=2;i<=Math.sqrt(n)&&prime;i++){
+  if(n%i===0)prime=false;
+ }
+
+ output('checkResult',
+  '<strong>Prime:</strong> '+(prime?'Yes':'No')+
+  '<br><strong>Even / Odd:</strong> '+(n%2===0?'Even':'Odd')+
+  '<br><strong>Absolute Value:</strong> '+Math.abs(n)
+ );
+}
+
+/* RECIPROCAL AND MODULUS */
+function findModulus(){
+ const a=getNumber('modA');
+ const b=getNumber('modB');
+
+ if(a===null||b===null){
+  output('modResult','Please enter both numbers.');
+  return;
+ }
+
+ if(b===0){
+  output('modResult','Second number cannot be zero.');
+  return;
+ }
+
+ const reciprocal=a===0?'Undefined':1/a;
+
+ output('modResult',
+  '<strong>Reciprocal of first number:</strong> '+reciprocal+
+  '<br><strong>Modulus (A mod B):</strong> '+(a%b)
+ );
+}
+</script>
+
+</body>
+</html>

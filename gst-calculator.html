@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VTools GST Calculator</title>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+
+body{
+ background:#080d1c;
+ color:white;
+ font-family:Arial,sans-serif;
+ padding:18px;
+}
+
+.container{
+ max-width:460px;
+ margin:20px auto;
+}
+
+.header{text-align:center;margin-bottom:25px}
+
+.logo{
+ font-size:32px;
+ margin-bottom:8px;
+}
+
+h1{
+ font-size:27px;
+ background:linear-gradient(90deg,#a78bfa,#22d3ee);
+ -webkit-background-clip:text;
+ color:transparent;
+}
+
+.header p{
+ color:#929bb4;
+ font-size:13px;
+ margin-top:8px;
+}
+
+.card{
+ background:#111a30;
+ border:1px solid #263653;
+ border-radius:18px;
+ padding:20px;
+ margin-bottom:16px;
+}
+
+label{
+ display:block;
+ color:#cbd5e1;
+ font-size:13px;
+ margin-bottom:9px;
+}
+
+input,select{
+ width:100%;
+ padding:14px;
+ background:#080d1c;
+ border:1px solid #344563;
+ border-radius:10px;
+ color:white;
+ font-size:16px;
+ outline:none;
+ margin-bottom:18px;
+}
+
+input:focus,select:focus{
+ border-color:#8b5cf6;
+}
+
+.tabs{
+ display:flex;
+ gap:10px;
+ margin-bottom:20px;
+}
+
+.tab{
+ flex:1;
+ padding:13px 5px;
+ border:1px solid #344563;
+ background:#080d1c;
+ color:#cbd5e1;
+ border-radius:10px;
+ cursor:pointer;
+}
+
+.tab.active{
+ background:linear-gradient(90deg,#7c3aed,#0891b2);
+ color:white;
+ border:0;
+}
+
+.calculate{
+ width:100%;
+ padding:15px;
+ border:0;
+ border-radius:11px;
+ color:white;
+ font-size:16px;
+ font-weight:bold;
+ background:linear-gradient(90deg,#7c3aed,#0891b2);
+ cursor:pointer;
+}
+
+.result{
+ display:none;
+}
+
+.result h2{
+ font-size:18px;
+ margin-bottom:18px;
+}
+
+.row{
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ padding:13px 0;
+ border-bottom:1px solid #293650;
+ color:#aab5ca;
+ font-size:14px;
+}
+
+.row strong{color:white}
+
+.total{
+ margin-top:17px;
+ padding:17px;
+ background:#172844;
+ border-radius:12px;
+ text-align:center;
+}
+
+.total small{color:#9caac2}
+
+.total h2{
+ color:#22d3ee;
+ font-size:27px;
+ margin-top:8px;
+}
+
+.copy{
+ width:100%;
+ margin-top:15px;
+ padding:13px;
+ border:1px solid #64748b;
+ background:transparent;
+ color:white;
+ border-radius:10px;
+ cursor:pointer;
+}
+
+.note{
+ color:#8491aa;
+ font-size:12px;
+ text-align:center;
+ margin-top:18px;
+ line-height:1.6;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+ <div class="header">
+  <div class="logo">🧾</div>
+  <h1>GST Calculator</h1>
+  <p>Calculate GST quickly and accurately</p>
+ </div>
+
+ <div class="card">
+
+  <label>Calculation Type</label>
+
+  <div class="tabs">
+   <button class="tab active" id="addTab"
+   onclick="setMode('add')">Add GST</button>
+
+   <button class="tab" id="removeTab"
+   onclick="setMode('remove')">Remove GST</button>
+  </div>
+
+  <label>Amount (₹)</label>
+  <input type="number" id="amount"
+  placeholder="Enter amount" min="0" step="0.01">
+
+  <label>GST Rate</label>
+  <select id="rate">
+   <option value="5">5% GST</option>
+   <option value="12">12% GST</option>
+   <option value="18" selected>18% GST</option>
+   <option value="28">28% GST</option>
+  </select>
+
+  <label>GST Type</label>
+  <select id="gstType">
+   <option value="intra">CGST + SGST (Within State)</option>
+   <option value="inter">IGST (Other State)</option>
+  </select>
+
+  <button class="calculate" onclick="calculateGST()">
+   Calculate GST
+  </button>
+
+ </div>
+
+ <div class="card result" id="result">
+
+  <h2>Calculation Result</h2>
+
+  <div class="row">
+   <span id="baseLabel">Original Amount</span>
+   <strong id="base">₹0.00</strong>
+  </div>
+
+  <div class="row">
+   <span>GST Rate</span>
+   <strong id="gstRate">18%</strong>
+  </div>
+
+  <div class="row">
+   <span id="taxLabel">GST Amount</span>
+   <strong id="tax">₹0.00</strong>
+  </div>
+
+  <div id="splitRows"></div>
+
+  <div class="total">
+   <small>Final Amount</small>
+   <h2 id="total">₹0.00</h2>
+  </div>
+
+  <button class="copy" onclick="copyResult()">
+   📋 Copy Result
+  </button>
+
+ </div>
+
+ <p class="note">
+  VTools GST Calculator<br>
+  For general calculation purposes.
+ </p>
+
+</div>
+
+<script>
+let mode = "add";
+let lastResult = "";
+
+function setMode(value){
+ mode = value;
+
+ document.getElementById("addTab")
+ .classList.toggle("active",value==="add");
+
+ document.getElementById("removeTab")
+ .classList.toggle("active",value==="remove");
+
+ document.getElementById("result").style.display="none";
+}
+
+function money(value){
+ return "₹" + value.toLocaleString("en-IN",{
+  minimumFractionDigits:2,
+  maximumFractionDigits:2
+ });
+}
+
+function calculateGST(){
+
+ const amount = parseFloat(
+  document.getElementById("amount").value
+ );
+
+ const rate = parseFloat(
+  document.getElementById("rate").value
+ );
+
+ const type = document.getElementById("gstType").value;
+
+ if(!Number.isFinite(amount) || amount<=0){
+  alert("Please enter a valid amount.");
+  return;
+ }
+
+ let base,tax,total;
+
+ if(mode==="add"){
+  base=amount;
+  tax=base*rate/100;
+  total=base+tax;
+ }else{
+  total=amount;
+  base=total/(1+rate/100);
+  tax=total-base;
+ }
+
+ document.getElementById("baseLabel").textContent =
+ mode==="add" ? "Original Amount" : "Amount Before GST";
+
+ document.getElementById("taxLabel").textContent =
+ mode==="add" ? "GST Added" : "GST Included";
+
+ document.getElementById("base").textContent=money(base);
+ document.getElementById("gstRate").textContent=rate+"%";
+ document.getElementById("tax").textContent=money(tax);
+ document.getElementById("total").textContent=money(total);
+
+ let split="";
+
+ if(type==="intra"){
+  split=`
+   <div class="row">
+    <span>CGST (${rate/2}%)</span>
+    <strong>${money(tax/2)}</strong>
+   </div>
+   <div class="row">
+    <span>SGST (${rate/2}%)</span>
+    <strong>${money(tax/2)}</strong>
+   </div>`;
+ }else{
+  split=`
+   <div class="row">
+    <span>IGST (${rate}%)</span>
+    <strong>${money(tax)}</strong>
+   </div>`;
+ }
+
+ document.getElementById("splitRows").innerHTML=split;
+
+ lastResult =
+ `VTools GST Calculator
+Calculation: ${mode==="add"?"Add GST":"Remove GST"}
+Base Amount: ${money(base)}
+GST Rate: ${rate}%
+GST Amount: ${money(tax)}
+${type==="intra"?
+ "CGST: "+money(tax/2)+"\nSGST: "+money(tax/2):
+ "IGST: "+money(tax)}
+Final Amount: ${money(total)}`;
+
+ document.getElementById("result").style.display="block";
+}
+
+function copyResult(){
+ if(!lastResult)return;
+
+ if(navigator.clipboard && window.isSecureContext){
+  navigator.clipboard.writeText(lastResult)
+  .then(()=>alert("Result copied!"))
+  .catch(()=>alert("Copy not supported in this browser."));
+ }else{
+  alert("Please open this page in a secure browser to copy.");
+ }
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,463 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Us | VTools</title>
+
+<style>
+*{
+box-sizing:border-box;
+margin:0;
+padding:0;
+}
+
+body{
+background:#080d1c;
+color:white;
+font-family:Arial,sans-serif;
+padding:18px;
+}
+
+.container{
+max-width:750px;
+margin:20px auto;
+}
+
+header{
+text-align:center;
+margin-bottom:30px;
+}
+
+.logo{
+font-size:40px;
+font-weight:bold;
+background:linear-gradient(90deg,#a855f7,#22d3ee);
+color:transparent;
+background-clip:text;
+}
+
+header p{
+color:#aab2c5;
+margin-top:8px;
+}
+
+.intro{
+text-align:center;
+margin-bottom:25px;
+}
+
+.intro h2{
+font-size:25px;
+margin-bottom:10px;
+}
+
+.intro p{
+color:#aab2c5;
+line-height:1.7;
+}
+
+.card{
+background:#111a30;
+border:1px solid #293451;
+border-radius:16px;
+padding:23px;
+margin-bottom:20px;
+}
+
+h3{
+color:#22d3ee;
+margin-bottom:15px;
+font-size:20px;
+}
+
+p{
+color:#cbd5e1;
+line-height:1.7;
+}
+
+label{
+display:block;
+margin:15px 0 7px;
+color:#dbe4f5;
+font-size:14px;
+}
+
+input,textarea,select{
+width:100%;
+padding:14px;
+background:#080d1c;
+border:1px solid #354361;
+border-radius:9px;
+color:white;
+font-size:15px;
+outline:none;
+}
+
+input:focus,textarea:focus,select:focus{
+border-color:#a855f7;
+}
+
+select option{
+background:#111a30;
+}
+
+textarea{
+height:140px;
+resize:vertical;
+}
+
+button{
+width:100%;
+padding:15px;
+margin-top:20px;
+border:0;
+border-radius:9px;
+background:linear-gradient(90deg,#9333ea,#0891b2);
+color:white;
+font-size:16px;
+font-weight:bold;
+cursor:pointer;
+}
+
+button:active{
+transform:scale(.98);
+}
+
+.note{
+font-size:12px;
+color:#8994aa;
+margin-top:10px;
+}
+
+.info-item{
+background:#0b1327;
+padding:15px;
+border-radius:10px;
+margin-top:12px;
+border:1px solid #263550;
+}
+
+.info-item strong{
+display:block;
+margin-bottom:7px;
+color:white;
+}
+
+.info-item a{
+color:#a78bfa;
+text-decoration:none;
+word-break:break-word;
+}
+
+.faq-item{
+padding:15px 0;
+border-bottom:1px solid #293451;
+}
+
+.faq-item:last-child{
+border-bottom:none;
+}
+
+.faq-item strong{
+display:block;
+color:white;
+margin-bottom:8px;
+}
+
+.social-links{
+display:flex;
+flex-wrap:wrap;
+gap:12px;
+margin-top:15px;
+}
+
+.social-links a{
+background:#0b1327;
+border:1px solid #354361;
+padding:12px 17px;
+border-radius:9px;
+color:#a78bfa;
+text-decoration:none;
+}
+
+nav{
+text-align:center;
+margin-top:25px;
+}
+
+nav a{
+color:#a78bfa;
+text-decoration:none;
+margin:8px;
+display:inline-block;
+}
+
+nav a:hover{
+color:#22d3ee;
+}
+
+footer{
+text-align:center;
+margin-top:25px;
+color:#778199;
+font-size:13px;
+line-height:1.8;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<header>
+<div class="logo">VTools</div>
+<p>Smart Tools. Simple Solutions.</p>
+</header>
+
+<div class="intro">
+<h2>Contact Us</h2>
+<p>
+Have a question, suggestion or problem?
+We are happy to hear from you.
+Send us your message using the form below.
+</p>
+</div>
+
+<!-- 1. SEND MESSAGE FIRST -->
+
+<div class="card">
+
+<h3>✍️ Send Us a Message</h3>
+
+<p>
+Fill out the form below to send your feedback,
+questions or suggestions to the VTools team.
+</p>
+
+<form id="contactForm">
+
+<label for="name">Full Name *</label>
+<input
+type="text"
+id="name"
+placeholder="Enter your full name"
+required
+>
+
+<label for="email">Email Address *</label>
+<input
+type="email"
+id="email"
+placeholder="Enter your email address"
+required
+>
+
+<label for="phone">Mobile Number *</label>
+<input
+type="tel"
+id="phone"
+placeholder="Enter your 10-digit mobile number"
+inputmode="numeric"
+pattern="[0-9]{10}"
+maxlength="10"
+minlength="10"
+required
+>
+
+<label for="category">Contact Category *</label>
+<select id="category" required>
+<option value="">Select a category</option>
+<option>General Question</option>
+<option>Technical Support</option>
+<option>Report a Bug</option>
+<option>Feedback</option>
+<option>Feature Request</option>
+<option>Business Inquiry</option>
+<option>Other</option>
+</select>
+
+<label for="subject">Subject *</label>
+<input
+type="text"
+id="subject"
+placeholder="Enter message subject"
+required
+>
+
+<label for="message">Your Message *</label>
+<textarea
+id="message"
+placeholder="Write your message here..."
+required
+></textarea>
+
+<button type="submit">Send Message ✉️</button>
+
+<p class="note">
+* All fields are required. Your email application will open
+with your message ready to send. Press Send in that app
+to deliver your message.
+</p>
+
+</form>
+</div>
+
+<!-- 2. CONTACT INFORMATION -->
+
+<div class="card">
+
+<h3>📩 Contact Information</h3>
+
+<p>
+For questions, technical support, suggestions
+or business inquiries, you can contact us.
+</p>
+
+<div class="info-item">
+<strong>✉️ Email Address</strong>
+<a href="mailto:tvineet704@gmail.com">
+tvineet704@gmail.com
+</a>
+</div>
+
+<div class="info-item">
+<strong>🌐 Website</strong>
+<a href="index.html">VTools Official Website</a>
+</div>
+
+<div class="info-item">
+<strong>🕒 Support Availability</strong>
+<p>You can send us a message anytime through email.</p>
+</div>
+
+</div>
+
+<!-- 3. RESPONSE INFORMATION -->
+
+<div class="card">
+
+<h3>⏳ Response Information</h3>
+
+<p>
+We will try to review and respond to messages as soon as possible.
+Response time may vary depending on the type and number of inquiries.
+</p>
+
+</div>
+
+<!-- 4. FAQ -->
+
+<div class="card">
+
+<h3>❓ Frequently Asked Questions</h3>
+
+<div class="faq-item">
+<strong>1. Are VTools services free?</strong>
+<p>
+Our tools are intended to be easy to access.
+Individual features may have their own limitations.
+</p>
+</div>
+
+<div class="faq-item">
+<strong>2. How can I report a problem?</strong>
+<p>
+Select "Report a Bug" in the contact form
+and describe the problem.
+</p>
+</div>
+
+<div class="faq-item">
+<strong>3. Can I suggest a new tool?</strong>
+<p>
+Yes! Select "Feature Request" and tell us
+which tool you would like to see.
+</p>
+</div>
+
+<div class="faq-item">
+<strong>4. How can I contact VTools?</strong>
+<p>
+You can email us at tvineet704@gmail.com.
+</p>
+</div>
+
+</div>
+
+<!-- 5. CONNECT WITH US -->
+
+<div class="card">
+
+<h3>🌐 Connect With Us</h3>
+
+<p>
+Have suggestions or ideas?
+We would love to hear your feedback.
+</p>
+
+<div class="social-links">
+<a href="mailto:tvineet704@gmail.com">✉️ Email Us</a>
+</div>
+
+</div>
+
+<!-- 6. FOOTER -->
+
+<nav>
+<a href="index.html">Home</a>
+<a href="about.html">About Us</a>
+<a href="privacy-policy.html">Privacy Policy</a>
+</nav>
+
+<footer>
+<p>© 2026 VTools. All Rights Reserved.</p>
+<p>Smart Tools. Simple Solutions.</p>
+</footer>
+
+</div>
+
+<script>
+
+document.getElementById("contactForm").addEventListener("submit",function(e){
+
+e.preventDefault();
+
+const name=document.getElementById("name").value.trim();
+const email=document.getElementById("email").value.trim();
+const phone=document.getElementById("phone").value.trim();
+const category=document.getElementById("category").value;
+const subject=document.getElementById("subject").value.trim();
+const message=document.getElementById("message").value.trim();
+
+if(!/^[0-9]{10}$/.test(phone)){
+alert("Please enter a valid 10-digit mobile number.");
+return;
+}
+
+const mailSubject=encodeURIComponent(
+"VTools - "+category+": "+subject
+);
+
+const mailBody=encodeURIComponent(
+"VTOOLS CONTACT FORM\n\n"+
+"Name: "+name+"\n"+
+"Email: "+email+"\n"+
+"Mobile Number: "+phone+"\n"+
+"Category: "+category+"\n"+
+"Subject: "+subject+"\n\n"+
+"Message:\n"+message
+);
+
+window.location.href=
+"mailto:tvineet704@gmail.com?subject="+
+mailSubject+"&body="+mailBody;
+
+});
+
+</script>
+
+</body>
+</html>

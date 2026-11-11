@@ -1,0 +1,365 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VTools QR Generator</title>
+
+<script src="https://unpkg.com/qr-code-styling@1.9.2/lib/qr-code-styling.js"></script>
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:#080b18;color:#fff;font-family:Arial,sans-serif;padding:16px}
+.container{max-width:850px;margin:auto}
+.nav{display:flex;justify-content:space-between;align-items:center;margin:10px 0 32px}
+.logo{font-size:26px;font-weight:800;background:linear-gradient(90deg,#a78bfa,#22d3ee);-webkit-background-clip:text;color:transparent}
+.back{color:#c4b5fd;text-decoration:none;background:#171c32;padding:11px 16px;border:1px solid #303957;border-radius:10px;font-size:13px}
+.hero{text-align:center;margin-bottom:25px}
+.hero-icon{width:72px;height:72px;margin:0 auto 15px;display:grid;place-items:center;font-size:37px;border-radius:21px;background:linear-gradient(135deg,#9333ea,#2563eb)}
+.hero h1{font-size:28px;margin-bottom:9px}
+.hero p{color:#929db8;font-size:13px;line-height:1.6}
+.mode-box{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.mode{padding:17px 10px;background:#121a30;border:1px solid #303c59;border-radius:15px;color:#cbd5e1;cursor:pointer}
+.mode.active{border:2px solid #9b5cff;background:linear-gradient(145deg,#28204b,#142442);color:white}
+.mode-icon{font-size:27px;margin-bottom:8px}
+.mode strong{display:block;font-size:14px}
+.mode small{display:block;color:#9ca9c4;font-size:11px;margin-top:6px}
+.main{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;align-items:start}
+.card{background:linear-gradient(145deg,#151d35,#10172b);border:1px solid #283653;border-radius:19px;padding:21px;box-shadow:0 15px 40px #0003}
+.card h2{font-size:18px;margin-bottom:20px}
+.label{display:block;font-size:13px;font-weight:bold;color:#d4ddf4;margin-bottom:9px}
+textarea,select{width:100%;background:#090f20;color:white;border:1px solid #354361;border-radius:11px;padding:13px;font-size:14px;outline:none;margin-bottom:18px}
+textarea{height:90px;resize:vertical}
+input[type=color]{width:100%;height:44px;padding:4px;border:1px solid #354361;border-radius:10px;background:#090f20;margin-bottom:18px}
+.colors{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.color-section{margin-bottom:20px}
+.color-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0 22px}
+.color-preset{position:relative;min-height:64px;padding:35px 3px 8px;border:1px solid #394664;border-radius:12px;background:#0b1226;color:#dce5fa;font-size:11px;font-weight:bold;cursor:pointer;overflow:hidden}
+.color-preset::before{content:"";position:absolute;top:7px;left:50%;transform:translateX(-50%);width:27px;height:27px;border-radius:9px;background:var(--swatch);border:2px solid #ffffff50;box-shadow:0 3px 12px #0005}
+.color-preset.active{border:2px solid #a78bfa;background:#242044;color:#fff;box-shadow:0 0 14px #8b5cf655}
+.color-preset.active::after{content:"✓";position:absolute;top:5px;right:6px;font-size:10px;color:#fff;background:#7c3aed;width:16px;height:16px;border-radius:50%;display:grid;place-items:center}
+.upload-box{border:2px dashed #58658a;background:#0b1226;border-radius:14px;padding:18px 12px;text-align:center;margin-bottom:20px}
+.upload-icon{font-size:35px;margin-bottom:9px}
+.upload-box p{color:#aab5cf;font-size:12px;margin:7px 0 13px}
+.file-btn{display:inline-block;padding:11px 18px;background:#27204c;color:#d8c8ff;border:1px solid #7654bd;border-radius:9px;font-size:13px;font-weight:bold;cursor:pointer}
+#photoInput{display:none}
+.photo-preview{width:90px;height:90px;object-fit:cover;border-radius:12px;display:none;margin:13px auto 0;border:2px solid #9b70ff}
+.remove-photo{display:none;background:#381b2b;color:#ffb4c4;border:1px solid #873d59;padding:8px 12px;width:auto;margin:10px auto 0;font-size:12px;border-radius:8px}
+.generate,.download{width:100%;padding:14px;border:0;border-radius:11px;font-size:14px;font-weight:bold;cursor:pointer}
+.generate{background:linear-gradient(100deg,#9333ea,#4169f5);color:white;margin-top:5px}
+.download{background:linear-gradient(100deg,#0891b2,#0d9488);color:white;margin-top:14px}
+.download:disabled{opacity:.4;cursor:not-allowed}
+.preview h2{text-align:left}
+.qr-area{min-height:270px;background:#090f20;border:1px dashed #465476;border-radius:15px;display:flex;justify-content:center;align-items:center;padding:15px;overflow:auto}
+#qrBox{display:flex;justify-content:center;align-items:center}
+#qrBox canvas,#qrBox img{max-width:100%;height:auto}
+.placeholder{color:#8490aa;font-size:13px;line-height:1.7;text-align:center}
+.tip{color:#8995af;font-size:12px;line-height:1.7;margin-top:15px}
+.notice{background:#19233b;border:1px solid #354361;padding:12px;border-radius:11px;color:#aebbd6;font-size:11px;line-height:1.6;margin-top:15px}
+.footer{text-align:center;color:#68738e;font-size:12px;margin:30px 0 10px}
+[hidden]{display:none!important}
+@media(max-width:650px){.main{grid-template-columns:1fr}.card{padding:18px}.hero h1{font-size:25px}}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<nav class="nav">
+ <div class="logo">✦ VTools</div>
+ <a href="index.html" class="back">← Home</a>
+</nav>
+
+<header class="hero">
+ <div class="hero-icon">▦</div>
+ <h1>QR Code Generator</h1>
+ <p>Create colorful QR codes and beautiful photo QR codes.</p>
+</header>
+
+<div class="mode-box">
+ <button type="button" class="mode active" id="normalMode">
+  <div class="mode-icon">▦</div>
+  <strong>Normal Color QR</strong>
+  <small>Without Photo</small>
+ </button>
+ <button type="button" class="mode" id="photoMode">
+  <div class="mode-icon">🖼️</div>
+  <strong>Photo QR</strong>
+  <small>Upload Your Photo</small>
+ </button>
+</div>
+
+<div class="main">
+<section class="card">
+
+<h2 id="formTitle">✦ Normal QR Settings</h2>
+
+<label class="label" for="qrText">Website URL or Text</label>
+<textarea id="qrText" placeholder="https://example.com"></textarea>
+
+<div id="photoSection" hidden>
+ <label class="label">Upload Your Photo</label>
+ <div class="upload-box">
+  <div class="upload-icon">🖼️</div>
+  <strong>Choose Your Photo</strong>
+  <p>JPG, PNG or WebP · Maximum 5 MB</p>
+  <label class="file-btn" for="photoInput">+ Upload Photo</label>
+  <input type="file" id="photoInput" accept="image/png,image/jpeg,image/webp">
+  <img id="photoPreview" class="photo-preview" alt="Photo preview">
+  <button type="button" class="remove-photo" id="removePhoto">Remove Photo</button>
+ </div>
+
+ <label class="label" for="logoSize">Photo Size in QR</label>
+ <select id="logoSize">
+  <option value="0.18">Small Photo</option>
+  <option value="0.24" selected>Medium Photo</option>
+  <option value="0.30">Large Photo</option>
+ </select>
+</div>
+
+<label class="label" for="qrSize">QR Code Size</label>
+<select id="qrSize">
+ <option value="256">256 × 256</option>
+ <option value="384" selected>384 × 384</option>
+ <option value="512">512 × 512</option>
+ <option value="768">768 × 768</option>
+</select>
+
+<label class="label" for="qrStyle">QR Pattern Style</label>
+<select id="qrStyle">
+ <option value="square">Square</option>
+ <option value="dots">Dots</option>
+ <option value="rounded">Rounded</option>
+ <option value="classy">Classy</option>
+ <option value="classy-rounded">Classy Rounded</option>
+ <option value="extra-rounded">Extra Rounded</option>
+</select>
+
+<div class="color-section">
+ <label class="label">✦ QR Color Collection</label>
+ <div class="color-grid" id="qrPalette">
+  <button type="button" class="color-preset active" data-color="#9333ea" style="--swatch:#9333ea">Royal</button>
+  <button type="button" class="color-preset" data-color="#2563eb" style="--swatch:#2563eb">Ocean</button>
+  <button type="button" class="color-preset" data-color="#dc2626" style="--swatch:#dc2626">Ruby</button>
+  <button type="button" class="color-preset" data-color="#15803d" style="--swatch:#15803d">Emerald</button>
+  <button type="button" class="color-preset" data-color="#d97706" style="--swatch:#d97706">Amber</button>
+  <button type="button" class="color-preset" data-color="#db2777" style="--swatch:#db2777">Rose</button>
+  <button type="button" class="color-preset" data-color="#0891b2" style="--swatch:#0891b2">Aqua</button>
+  <button type="button" class="color-preset" data-color="#111827" style="--swatch:#111827">Midnight</button>
+ </div>
+
+ <label class="label">✦ Background Collection</label>
+ <div class="color-grid" id="bgPalette">
+  <button type="button" class="color-preset active" data-color="#ffffff" style="--swatch:#ffffff">White</button>
+  <button type="button" class="color-preset" data-color="#fef3c7" style="--swatch:#fef3c7">Cream</button>
+  <button type="button" class="color-preset" data-color="#e0f2fe" style="--swatch:#e0f2fe">Ice</button>
+  <button type="button" class="color-preset" data-color="#fce7f3" style="--swatch:#fce7f3">Blush</button>
+  <button type="button" class="color-preset" data-color="#dcfce7" style="--swatch:#dcfce7">Mint</button>
+  <button type="button" class="color-preset" data-color="#ede9fe" style="--swatch:#ede9fe">Lavender</button>
+  <button type="button" class="color-preset" data-color="#1e293b" style="--swatch:#1e293b">Dark</button>
+  <button type="button" class="color-preset" data-color="#000000" style="--swatch:#000000">Black</button>
+ </div>
+
+ <div class="colors">
+  <div>
+   <label class="label" for="darkColor">Custom QR Color</label>
+   <input type="color" id="darkColor" value="#9333ea">
+  </div>
+  <div>
+   <label class="label" for="lightColor">Custom Background</label>
+   <input type="color" id="lightColor" value="#ffffff">
+  </div>
+ </div>
+</div>
+
+<button class="generate" id="generateBtn">✦ Generate QR Code</button>
+
+<div class="notice" id="modeNotice">
+ Normal QR: No photo needed. Choose your colors and create QR.
+</div>
+</section>
+
+<section class="card preview">
+<h2>▦ Your QR Preview</h2>
+<div class="qr-area">
+ <div id="qrBox">
+  <p class="placeholder">▦<br><br>Your QR Code will appear here.</p>
+ </div>
+</div>
+<button class="download" id="downloadBtn" disabled>↓ Download QR PNG</button>
+<p class="tip">✓ Custom colors<br>✓ Multiple QR patterns<br>✓ High resolution PNG</p>
+</section>
+</div>
+
+<footer class="footer">© 2026 VTools · Smart Tools for Everyone</footer>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+
+let currentMode="normal";
+let photoData="";
+let qr=null;
+let generated=false;
+
+function setupPalette(paletteId,inputId){
+ const palette=$(paletteId);
+ const input=$(inputId);
+
+ palette.querySelectorAll(".color-preset").forEach(button=>{
+  button.addEventListener("click",()=>{
+   palette.querySelectorAll(".color-preset").forEach(b=>b.classList.remove("active"));
+   button.classList.add("active");
+   input.value=button.dataset.color;
+  });
+ });
+
+ input.addEventListener("input",()=>{
+  palette.querySelectorAll(".color-preset").forEach(b=>b.classList.remove("active"));
+ });
+}
+
+setupPalette("qrPalette","darkColor");
+setupPalette("bgPalette","lightColor");
+
+function setMode(mode){
+ currentMode=mode;
+
+ $("normalMode").classList.toggle("active",mode==="normal");
+ $("photoMode").classList.toggle("active",mode==="photo");
+
+ $("photoSection").hidden=mode!=="photo";
+
+ if(mode==="normal"){
+  $("formTitle").textContent="✦ Normal QR Settings";
+  $("modeNotice").textContent="Normal QR: No photo needed. Choose your colors and create QR.";
+ }else{
+  $("formTitle").textContent="✦ Photo QR Settings";
+  $("modeNotice").textContent="Photo QR: Upload a photo to place it in the center of your QR.";
+ }
+
+ resetPreview();
+}
+
+function resetPreview(){
+ qr=null;
+ generated=false;
+ $("downloadBtn").disabled=true;
+ $("qrBox").innerHTML='<p class="placeholder">▦<br><br>Your QR Code will appear here.</p>';
+}
+
+$("normalMode").addEventListener("click",()=>setMode("normal"));
+$("photoMode").addEventListener("click",()=>setMode("photo"));
+
+$("photoInput").addEventListener("change",()=>{
+ const file=$("photoInput").files[0];
+ if(!file)return;
+
+ if(!["image/jpeg","image/png","image/webp"].includes(file.type)){
+  alert("Please select JPG, PNG or WebP.");
+  $("photoInput").value="";
+  return;
+ }
+
+ if(file.size>5*1024*1024){
+  alert("Please select a photo smaller than 5 MB.");
+  $("photoInput").value="";
+  return;
+ }
+
+ const reader=new FileReader();
+ reader.onload=event=>{
+  photoData=event.target.result;
+  $("photoPreview").src=photoData;
+  $("photoPreview").style.display="block";
+  $("removePhoto").style.display="block";
+ };
+ reader.readAsDataURL(file);
+});
+
+$("removePhoto").addEventListener("click",()=>{
+ photoData="";
+ $("photoInput").value="";
+ $("photoPreview").src="";
+ $("photoPreview").style.display="none";
+ $("removePhoto").style.display="none";
+ resetPreview();
+});
+
+async function generateQR(){
+ const text=$("qrText").value.trim();
+
+ if(!text){
+  alert("Please enter a URL or text.");
+  return;
+ }
+
+ if(currentMode==="photo"&&!photoData){
+  alert("Please upload a photo first.");
+  return;
+ }
+
+ if(typeof QRCodeStyling==="undefined"){
+  alert("QR library not loaded. Check your internet connection.");
+  return;
+ }
+
+ const size=Number($("qrSize").value);
+ const style=$("qrStyle").value;
+ const dark=$("darkColor").value;
+ const light=$("lightColor").value;
+
+ const options={
+  width:size,
+  height:size,
+  type:"canvas",
+  data:text,
+  margin:16,
+  qrOptions:{errorCorrectionLevel:"H"},
+  dotsOptions:{color:dark,type:style},
+  backgroundOptions:{color:light},
+  cornersSquareOptions:{color:dark,type:"extra-rounded"},
+  cornersDotOptions:{color:dark,type:"dot"}
+ };
+
+ if(currentMode==="photo"){
+  options.image=photoData;
+  options.imageOptions={
+   hideBackgroundDots:true,
+   imageSize:Number($("logoSize").value),
+   margin:7
+  };
+ }
+
+ resetPreview();
+
+ try{
+  const newQR=new QRCodeStyling(options);
+  await newQR.getRawData("png");
+  qr=newQR;
+  qr.append($("qrBox"));
+  generated=true;
+  $("downloadBtn").disabled=false;
+ }catch(error){
+  qr=null;
+  generated=false;
+  $("downloadBtn").disabled=true;
+  $("qrBox").innerHTML='<p class="placeholder">Could not generate QR. Try again.</p>';
+  alert("QR generation failed. Please try another image or shorter text.");
+ }
+}
+
+$("generateBtn").addEventListener("click",generateQR);
+
+$("downloadBtn").addEventListener("click",()=>{
+ if(!qr||!generated)return;
+
+ qr.download({
+  name:currentMode==="photo"?"VTools-Photo-QR":"VTools-Normal-QR",
+  extension:"png"
+ });
+});
+</script>
+</body>
+</html>
