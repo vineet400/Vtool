@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://vineet400.github.io/Vtool/sitemap.xml
+Sitemap: https://vtools.co.in/sitemap.xml
